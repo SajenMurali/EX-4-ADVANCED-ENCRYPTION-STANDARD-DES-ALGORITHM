@@ -1,92 +1,74 @@
-# EX-7-DATA-ENCRYPTION-STANDARD-DES-ALGORITHM
+# EX-8-ADVANCED-ENCRYPTION-STANDARD-DES-ALGORITHM
 
 ## Aim:
-  To use Data Encryption Standard (DES) Algorithm for a practical application like URL Encryption.
+  To use Advanced Encryption Standard (AES) Algorithm for a practical application like URL Encryption.
+
 ## ALGORITHM: 
-  1. DES (Data Encryption Standard) is a symmetric-key algorithm for the encryption of data. 
-  2. DES operates on a Feistel network, which breaks the encryption process into 16 rounds.
-  3. The block size of DES is fixed at 64 bits (8 bytes), and it uses a key size of 56 bits (7 bytes). However, keys are often provided as 64-bit keys where 8 bits are used for parity.
-  4. DES processes blocks of data using permutations and substitutions (S-boxes) over several rounds to generate the ciphertext from plaintext.
+  1. AES is based on a design principle known as a substitution–permutation. 
+  2. AES does not use a Feistel network like DES, it uses variant of Rijndael. 
+  3. It has a fixed block size of 128 bits, and a key size of 128, 192, or 256 bits. 
+  4. AES operates on a 4 × 4 column-major order array of bytes, termed the state
 
 ## PROGRAM: 
 ```
 #include <stdio.h>
-#include <stdint.h>
 #include <string.h>
 
-typedef uint64_t DES_Block;
-
-DES_Block initial_permutation(DES_Block block) {
-    return block;
-}
-
-DES_Block final_permutation(DES_Block block) {
-    return block;
-}
-
-DES_Block feistel_function(DES_Block right_half, DES_Block subkey) {
-    return right_half ^ subkey;
-}
-
-DES_Block des_encrypt(DES_Block plaintext, DES_Block key) {
-    DES_Block permuted_block = initial_permutation(plaintext);
-    DES_Block left = permuted_block >> 32;
-    DES_Block right = permuted_block & 0xFFFFFFFF;
-
-    for (int round = 0; round < 16; round++) {
-        DES_Block temp = right;
-        right = left ^ feistel_function(right, key);
-        left = temp;
+void simpleAESEncrypt(char *plaintext, char *key, char *ciphertext)
+{
+    int i;
+    for (i = 0; i < strlen(plaintext); i++) 
+    {
+        ciphertext[i] = plaintext[i] ^ key[i % strlen(key)]; 
     }
-
-    DES_Block pre_output = (right << 32) | left;
-    DES_Block ciphertext = final_permutation(pre_output);
-
-    return ciphertext;
+    ciphertext[i] = '\0'; 
 }
 
-DES_Block des_decrypt(DES_Block ciphertext, DES_Block key) {
-    return des_encrypt(ciphertext, key);
-}
-
-void process_url_encryption(const char* url, DES_Block key) {
-    size_t len = strlen(url);
-    size_t blocks = len / 8;
-    if (len % 8 != 0) blocks++;
-
-    for (size_t i = 0; i < blocks; i++) {
-        DES_Block plaintext = 0;
-        char chunk[9] = {0};  
-
-        strncpy(chunk, url + i * 8, 8);  
-        memcpy(&plaintext, chunk, sizeof(chunk));  
-
-        DES_Block ciphertext = des_encrypt(plaintext, key);
-        printf("Block %zu Encrypted: %lX\n", i, ciphertext);
-
-        DES_Block decrypted = des_decrypt(ciphertext, key);
-        printf("Block %zu Decrypted: %s\n", i, (char*)&decrypted);
+void simpleAESDecrypt(char *ciphertext, char *key, char *decryptedText)
+{
+    int i;
+    for (i = 0; i < strlen(ciphertext); i++) 
+    {
+        decryptedText[i] = ciphertext[i] ^ key[i % strlen(key)]; 
     }
+    decryptedText[i] = '\0'; 
 }
 
-int main() {
-    printf("Ex-7 - Implement DES Encryption and Decryption\n");
-    const char* url = "https://tharun.com"; 
-    DES_Block key = 0x133457799BBCDFF1;
+void printASCII(char *ciphertext) 
+{
+    printf("Encrypted Message (ASCII values): ");
+    for (int i = 0; i < strlen(ciphertext); i++) 
+    {
+        printf("%d ", (unsigned char)ciphertext[i]); 
+    }
+    printf("\n");
+}
 
-    printf("Encrypting URL: %s\n", url);
-    process_url_encryption(url, key);
+int main() 
+{
+    char plaintext[100], key[100], ciphertext[100], decryptedText[100];
+
+    printf("Enter the plaintext: ");
+    scanf("%s", plaintext);
+
+    printf("Enter the key: ");
+    scanf("%s", key);
+
+    simpleAESEncrypt(plaintext, key, ciphertext);
+    printASCII(ciphertext);  
+
+    simpleAESDecrypt(ciphertext, key, decryptedText);
+    printf("Decrypted Message: %s\n", decryptedText);
 
     return 0;
 }
 ```
 ## OUTPUT:
-![Screenshot 2024-11-06 175718](https://github.com/user-attachments/assets/fa01175b-c80a-4591-8e0c-78df4bc4ec71)
-
-
-
+![Screenshot 2024-11-08 093134](https://github.com/user-attachments/assets/dd44de50-9167-4a86-8bff-373002865c2c)
 
 
 
 ## RESULT: 
-Thus Data Encryption Standard (DES) Algorithm for a practical application like URL Encryption has been successfully excecuted.
+Hence,to use Advanced Encryption Standard (AES) Algorithm for a practical application like URL Encryption is done successfully.
+
+
